@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.Pwa.Site" parent="Theme.Pwa.WebApp" />
+</resources>

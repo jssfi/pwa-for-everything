@@ -1,4 +1,4 @@
-# Methods called from JavaScript through addJavascriptInterface.
--keepclassmembers class fi.jss.pwa.WebAppActivity$DownloadBridge {
-    @android.webkit.JavascriptInterface <methods>;
-}
+# apksig references optional classes that are not on Android.
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**

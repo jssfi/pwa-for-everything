@@ -1,4 +1,5 @@
 import java.util.Properties
+import java.util.zip.ZipFile
 
 plugins {
     id("com.android.application")
@@ -20,8 +21,8 @@ android {
         applicationId = "fi.jss.pwa"
         minSdk = 29
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = rootProject.extra["appVersionCode"] as Int
+        versionName = rootProject.extra["appVersionName"] as String
     }
 
     signingConfigs {
@@ -50,5 +51,46 @@ android {
     }
     kotlin {
         jvmToolchain(17)
+    }
+}
+
+dependencies {
+    implementation(project(":core"))
+    // Signs the generated per-site APKs on the device.
+    implementation("com.android.tools.build:apksig:8.13.0")
+}
+
+/** Puts the unsigned per-site app template (:site) into this app's assets as site-template.apk. */
+abstract class CopySiteTemplate : DefaultTask() {
+    @get:InputFiles
+    abstract val apkDir: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun copy() {
+        val apk = apkDir.get().asFile.listFiles { f -> f.name.endsWith(".apk") }!!.single()
+        // SiteApkBuilder replaces these entries by path.
+        ZipFile(apk).use { zip ->
+            for (entry in listOf("res/drawable-nodpi-v4/site_icon.png", "assets/site.json")) {
+                check(zip.getEntry(entry) != null) { "site template is missing $entry" }
+            }
+        }
+        val out = outputDir.get().asFile
+        out.deleteRecursively()
+        out.mkdirs()
+        apk.copyTo(File(out, "site-template.apk"))
+    }
+}
+
+val copySiteTemplate = tasks.register<CopySiteTemplate>("copySiteTemplate") {
+    dependsOn(":site:assembleRelease")
+    apkDir.set(project(":site").layout.buildDirectory.dir("outputs/apk/release"))
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(copySiteTemplate, CopySiteTemplate::outputDir)
     }
 }

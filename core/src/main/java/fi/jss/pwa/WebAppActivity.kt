@@ -41,23 +41,30 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
+import fi.jss.pwa.core.R
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.concurrent.thread
 
-/** Shows one site fullscreen. Each site runs in its own task (see documentLaunchMode in the manifest). */
+/**
+ * Shows one site fullscreen. In the launcher app each site runs in its own task (see documentLaunchMode in
+ * its manifest) and is picked by the intent's pwa://site/<id> URI. In a generated per-site app it is the
+ * launcher activity and the site comes from assets/site.json.
+ */
 class WebAppActivity : Activity() {
     private lateinit var site: Site
     private lateinit var root: FrameLayout
     private lateinit var webView: WebView
     private var popup: View? = null
     private var popupWebView: WebView? = null
+    private var splash: View? = null
     private var customView: View? = null
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
     private var fileCallback: ValueCallback<Array<Uri>>? = null
@@ -67,7 +74,7 @@ class WebAppActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val loaded = Site.idFromUri(intent.data)?.let { SiteStore.get(this, it) }
+        val loaded = Site.idFromUri(intent.data)?.let { SiteStore.get(this, it) } ?: StandaloneSite.load(this)
         if (loaded == null) {
             Toast.makeText(this, R.string.site_missing, Toast.LENGTH_LONG).show()
             finishAndRemoveTask()
@@ -86,6 +93,7 @@ class WebAppActivity : Activity() {
         webView = WebView(this)
         configure(webView)
         root.addView(webView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        showSplash()
         setContentView(root)
 
         if (savedInstanceState == null || webView.restoreState(savedInstanceState) == null) {
@@ -116,6 +124,7 @@ class WebAppActivity : Activity() {
     }
 
     override fun onDestroy() {
+        main.removeCallbacksAndMessages(null)
         if (::webView.isInitialized) {
             popupWebView?.destroy()
             webView.destroy()
@@ -161,6 +170,29 @@ class WebAppActivity : Activity() {
     @Suppress("DEPRECATION")
     private fun updateTaskDescription() {
         setTaskDescription(ActivityManager.TaskDescription(site.name, SiteIcons.taskIcon(this, site)))
+    }
+
+    /**
+     * Covers the page with the site icon until it first paints, instead of a blank white WebView. The launcher
+     * app's system splash has no icon (see values-v31/themes.xml), so this also acts as the site's splash.
+     */
+    private fun showSplash() {
+        val size = (96 * resources.displayMetrics.density).toInt()
+        val view = FrameLayout(this).apply {
+            setBackgroundColor(getColor(R.color.bg))
+            isClickable = true
+            addView(ImageView(context).apply { setImageBitmap(SiteIcons.display(context, site, size)) },
+                FrameLayout.LayoutParams(size, size, Gravity.CENTER))
+        }
+        root.addView(view, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        splash = view
+        main.postDelayed(::hideSplash, 8000) // never hide the page for long if it is slow or fails
+    }
+
+    private fun hideSplash() {
+        val view = splash ?: return
+        splash = null
+        view.animate().alpha(0f).setDuration(150).withEndAction { root.removeView(view) }
     }
 
     // ---------------------------------------------------------------- web view setup
@@ -223,6 +255,10 @@ class WebAppActivity : Activity() {
                 "intent" -> { openIntentUri(view, uri.toString()); true }
                 else -> { openExternal(uri); true }
             }
+        }
+
+        override fun onPageCommitVisible(view: WebView, url: String) {
+            if (view === webView) hideSplash()
         }
 
         override fun onPageFinished(view: WebView, url: String) {
@@ -412,11 +448,14 @@ class WebAppActivity : Activity() {
                 when (which) {
                     0 -> webView.reload()
                     1 -> webView.loadUrl(site.url)
-                    2 -> startActivity(
-                        Intent(this, MainActivity::class.java)
-                            .putExtra(MainActivity.EXTRA_EDIT_ID, site.id)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
+                    2 -> SiteEditor.show(this, site) { saved ->
+                        val urlChanged = saved.url != site.url
+                        site = saved
+                        webView.settings.userAgentString = userAgent(webView)
+                        applyWindowMode()
+                        updateTaskDescription()
+                        if (urlChanged) webView.loadUrl(site.url)
+                    }
                     3 -> finishAndRemoveTask()
                 }
             }
@@ -599,7 +638,7 @@ class WebAppActivity : Activity() {
 
     private fun iconChanged() {
         updateTaskDescription()
-        MainActivity.updatePinnedShortcut(this, site)
+        Shortcuts.updatePinned(this, site)
     }
 
     companion object {

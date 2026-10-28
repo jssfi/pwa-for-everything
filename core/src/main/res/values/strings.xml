@@ -14,7 +14,24 @@
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="delete_confirm">Delete \"%1$s\"? Its home screen shortcut will stop working.</string>
-    <string name="add_to_home">Add to home screen</string>
+    <string name="add_to_home">Add shortcut to home screen</string>
+    <string name="install_app">Install as app</string>
+    <string name="update_app">Update installed app</string>
+    <string name="open_app">Open installed app</string>
+    <string name="uninstall_app">Uninstall app</string>
+    <string name="building_app">Building %1$s…</string>
+    <string name="build_failed">Could not build the app: %1$s</string>
+    <string name="install_done">%1$s installed</string>
+    <string name="install_failed">Install failed: %1$s</string>
+    <string name="install_permission_title">Allow installing apps</string>
+    <string name="install_permission_message">To install sites as their own apps, allow PWA for Everything to install unknown apps on the next screen, then try again.</string>
+    <string name="open_settings">Open settings</string>
+    <string name="no_icon_title">No icon yet</string>
+    <string name="no_icon_message">Open %1$s once first so the app picks up its icon. Otherwise it gets a letter icon.</string>
+    <string name="open_site">Open site</string>
+    <string name="install_anyway">Install anyway</string>
+    <string name="install_explain">Installs %1$s as its own app: its own icon with no badge, its own splash screen and its own entry in recents. It keeps its own login, separate from this app.</string>
+    <string name="install">Install</string>
     <string name="edit">Edit</string>
     <string name="invalid_url">Enter a valid http or https URL</string>
     <string name="site_missing">This app was deleted</string>
@@ -28,5 +45,5 @@
     <string name="download_failed">Download failed</string>
     <string name="no_app_for_link">No app can open this link</string>
     <string name="close">Close</string>
-    <string name="help">Tip: press Back on the first page for Reload, Start page and Exit. Long-press an app for more options.</string>
+    <string name="help">Long-press an app to add a home screen shortcut or install it as its own app. In an app, press Back on the first page for Reload, Settings and Exit.</string>
 </resources>

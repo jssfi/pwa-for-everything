@@ -1,0 +1,7 @@
+<resources>
+    <!-- Unlike the launcher app, a generated app's own icon is the site icon, so the system splash can show it. -->
+    <style name="Theme.Pwa.Site" parent="Theme.Pwa.WebApp">
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/site_launcher</item>
+        <item name="android:windowSplashScreenBackground">@color/bg</item>
+    </style>
+</resources>

@@ -55,6 +55,31 @@ data class Site(
     }
 }
 
+/**
+ * In a generated per-site app, assets/site.json holds the site it was built for (see SiteApkBuilder).
+ * It is copied into [SiteStore] on first start and whenever the app is regenerated, so that edits
+ * made in the app's own settings survive until the next regeneration.
+ */
+object StandaloneSite {
+    private const val ASSET = "site.json"
+
+    fun load(context: Context): Site? {
+        val json = try {
+            JSONObject(context.assets.open(ASSET).bufferedReader().use { it.readText() })
+        } catch (e: Exception) {
+            return null
+        }
+        val site = Site.fromJson(json)
+        val stamp = json.optLong("stamp")
+        val prefs = context.getSharedPreferences("standalone", Context.MODE_PRIVATE)
+        if (prefs.getLong("stamp", -1) != stamp || SiteStore.get(context, site.id) == null) {
+            SiteStore.save(context, site)
+            prefs.edit().putLong("stamp", stamp).apply()
+        }
+        return SiteStore.get(context, site.id)
+    }
+}
+
 object SiteStore {
     private const val PREFS = "sites"
     private const val KEY = "list"

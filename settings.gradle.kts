@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "pwa-for-everything"
-include(":app")
+include(":core", ":app", ":site")

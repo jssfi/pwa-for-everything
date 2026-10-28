@@ -1,0 +1,8 @@
+<resources>
+    <!-- The system splash would show the launcher app's logo for every site, so show no icon: WebAppActivity
+         draws the site's own icon over the same background until the page appears. -->
+    <style name="Theme.Pwa.WebApp" parent="Theme.Pwa.WebApp.Base">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_blank</item>
+        <item name="android:windowSplashScreenBackground">@color/bg</item>
+    </style>
+</resources>

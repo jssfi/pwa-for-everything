@@ -61,9 +61,14 @@ object SiteIcons {
         return out
     }
 
-    /** An adaptive icon for home screen shortcuts and the recents entry. */
-    fun adaptive(context: Context, site: Site): Icon {
-        // Adaptive bitmaps are 108dp with the visible area in the middle 72dp; only the inner 66dp is always safe.
+    /** An adaptive icon for home screen shortcuts. */
+    fun adaptive(context: Context, site: Site): Icon = Icon.createWithAdaptiveBitmap(adaptiveBitmap(context, site))
+
+    /**
+     * A full-bleed 432px (108dp at xxxhdpi) adaptive icon layer: the site icon on white, or a letter tile.
+     * Only the inner 66dp of an adaptive icon is always visible, so the icon is kept inside that area.
+     */
+    fun adaptiveBitmap(context: Context, site: Site): Bitmap {
         val size = 432
         val icon = load(context, site.id)
         val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
@@ -77,7 +82,7 @@ object SiteIcons {
             val off = (size - inner) / 2
             canvas.drawBitmap(icon, null, RectF(off, off, off + inner, off + inner), Paint(Paint.FILTER_BITMAP_FLAG))
         }
-        return Icon.createWithAdaptiveBitmap(bmp)
+        return bmp
     }
 
     /** Small plain bitmap for ActivityManager.TaskDescription. */
