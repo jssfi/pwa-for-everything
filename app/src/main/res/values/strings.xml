@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">PWA for Everything</string>
+    <string name="share_add">Add as app</string>
+    <string name="empty_hint">No apps yet.\nTap + to turn any website into a fullscreen app.</string>
+    <string name="add_site">Add app</string>
+    <string name="edit_site">Edit app</string>
+    <string name="name">Name</string>
+    <string name="url">URL</string>
+    <string name="opt_fullscreen">Hide status and navigation bars</string>
+    <string name="opt_keep_screen_on">Keep screen on</string>
+    <string name="opt_desktop">Desktop mode</string>
+    <string name="opt_external">Open other websites in the browser</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="delete_confirm">Delete \"%1$s\"? Its home screen shortcut will stop working.</string>
+    <string name="add_to_home">Add to home screen</string>
+    <string name="edit">Edit</string>
+    <string name="invalid_url">Enter a valid http or https URL</string>
+    <string name="site_missing">This app was deleted</string>
+    <string name="pin_unsupported">Your launcher does not support shortcuts</string>
+    <string name="menu_reload">Reload</string>
+    <string name="menu_home">Go to start page</string>
+    <string name="menu_settings">App settings</string>
+    <string name="menu_exit">Exit</string>
+    <string name="download_saved">Saved %1$s to Downloads</string>
+    <string name="download_started">Downloading %1$s</string>
+    <string name="download_failed">Download failed</string>
+    <string name="no_app_for_link">No app can open this link</string>
+    <string name="close">Close</string>
+    <string name="help">Tip: press Back on the first page for Reload, Start page and Exit. Long-press an app for more options.</string>
+</resources>

@@ -1,0 +1,7 @@
+<resources>
+    <color name="brand">#059669</color>
+    <color name="bg">#FFF6F7F8</color>
+    <color name="fg">#FF1B1D1F</color>
+    <color name="fg_dim">#FF5F6368</color>
+    <color name="tile">#FFFFFFFF</color>
+</resources>

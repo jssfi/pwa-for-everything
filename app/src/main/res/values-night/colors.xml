@@ -1,0 +1,6 @@
+<resources>
+    <color name="bg">#FF121314</color>
+    <color name="fg">#FFE8EAED</color>
+    <color name="fg_dim">#FF9AA0A6</color>
+    <color name="tile">#FF1F2123</color>
+</resources>
